@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-export interface User {
+export interface IUser {
     _id: string;
     name: string;
     email: string;
@@ -9,7 +9,7 @@ export interface User {
 }
 
 export interface AuthRequest extends Request {
-    user?: {
+    User?: {
         id: string;
         email: string;
     };
@@ -42,7 +42,7 @@ export interface SkillScore {
     score: number;
 }
 
-export interface ApiResponse {
+export interface ApiResponse<T> {
     success: boolean;
     message: string;
 }
