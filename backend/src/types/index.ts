@@ -9,7 +9,7 @@ export interface IUser {
 }
 
 export interface AuthRequest extends Request {
-    User?: {
+    user?: {
         id: string;
         email: string;
     };

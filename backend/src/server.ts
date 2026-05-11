@@ -3,6 +3,7 @@ import { PORT } from './config/env.js';
 import { connectToDB } from './config/database.js';
 import authRouter from './routes/auth.routes.js';
 import JobRouter from './routes/job.routes.js';
+import candidateRouter from './routes/candidate.routes.js';
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: false}));
 
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", JobRouter);
+app.use("/api/candidates", candidateRouter);
 
 connectToDB().then(() => {
     app.listen(PORT, () => {
