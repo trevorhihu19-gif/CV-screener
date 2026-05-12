@@ -12,7 +12,7 @@ export const createJob = async (
             title,
             description,
             requirements,
-            createdBy: req.User?.id,
+            createdBy: req.user?.id,
         });
 
         res.status(201).json({
@@ -33,7 +33,7 @@ export const getJobs = async (
     res: Response
 ): Promise<void> => {
     try{
-        const jobs = await Job.find({ createdBy: req.User?.id}).sort({
+        const jobs = await Job.find({ createdBy: req.user?.id}).sort({
             createdAt: -1
         });
 
@@ -57,7 +57,7 @@ export const getJobById = async (
     try{
         const job = await Job.findOne({
             _id: req.params.id,
-            createdBy: req.User?.id
+            createdBy: req.user?.id
         });
 
         if(!job) {
@@ -88,7 +88,7 @@ export const deleteJob = async (
     try{
         const job = await Job.findOneAndDelete({
             _id: req.params.id,
-            createdBy: req.User?.id,
+            createdBy: req.user?.id,
         });
 
         if(!job) {

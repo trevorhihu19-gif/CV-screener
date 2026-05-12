@@ -25,7 +25,7 @@ export const protect = (
             email: string;
         };
 
-        req.User = {
+        req.user = {
             id: decoded.id,
             email: decoded.email
         };
