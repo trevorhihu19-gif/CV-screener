@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem("token");
   });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
@@ -37,6 +37,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         throw new Error(res.message);
       }
+    } catch (err: unknown) {
+      const axiosError = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const message =
+        axiosError?.response?.data?.message ||
+        axiosError?.message ||
+        "Login failed";
+      throw new Error(message);
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +68,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         throw new Error(res.message);
       }
+    } catch (err: unknown) {
+      const axiosError = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const message =
+        axiosError?.response?.data?.message ||
+        axiosError?.message ||
+        "Login failed";
+      throw new Error(message);
     } finally {
       setIsLoading(false);
     }

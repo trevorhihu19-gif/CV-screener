@@ -1,1 +1,78 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #f0f2f5;
+    color: #0d0f14;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  html.dark body {
+    background-color: #0f1117;
+    color: #f0f2f5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .card {
+    background-color: white;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+  }
+
+  html.dark .card {
+    background-color: #1a1d27;
+    border-color: #2a2d3a;
+  }
+
+  .badge-shortlisted {
+    background-color: #dcfce7;
+    color: #166534;
+    border-radius: 99px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .badge-reviewing {
+    background-color: #fef9c3;
+    color: #713f12;
+    border-radius: 99px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .badge-rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-radius: 99px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .badge-pending {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-radius: 99px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+}

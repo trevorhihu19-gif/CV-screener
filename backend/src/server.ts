@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from "cors";
 import { PORT } from './config/env.js';
 import { connectToDB } from './config/database.js';
 import authRouter from './routes/auth.routes.js';
@@ -8,6 +9,10 @@ import candidateRouter from './routes/candidate.routes.js';
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 app.use(express.urlencoded({ extended: false}));
 
 app.use("/api/auth", authRouter);
