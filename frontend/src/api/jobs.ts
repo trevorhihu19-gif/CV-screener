@@ -10,7 +10,7 @@ export const createJob = async (
   return res.data;
 };
 
-export const getJobs = async (): Promise<ApiResponse<Job>> => {
+export const getJobs = async (): Promise<ApiResponse<Job[]>> => {
   const res = await api.get("/jobs");
   return res.data;
 };

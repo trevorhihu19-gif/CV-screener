@@ -26,7 +26,7 @@ export const RegisterPage = () => {
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-black text-gray-900 tracking-tight">
-            RecruitAI
+            RecruitBot
             <span className="inline-block w-2 h-2 rounded-full bg-blue-600 mb-3 ml-1" />
           </h1>
           <p className="text-gray-500 text-sm mt-1">Create your account</p>
