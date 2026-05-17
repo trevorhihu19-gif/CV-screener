@@ -43,7 +43,7 @@ export const DashboardPage = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5
                         text-sm font-medium transition-all flex items-center gap-2"
           >
-            + New Job
+             New Job
           </Link>
         </div>
 
@@ -126,14 +126,14 @@ export const DashboardPage = () => {
             <div className="flex flex-col items-center justify-center py-16 gap-3">
               <span className="text-4xl"></span>
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                No jobs yet 😞- create your first one
+                No jobs yet - create your first one
               </p>
               <Link
                 to="/jobs"
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 text-sm
                         font-medium transition-all mt-1"
               >
-                + Create Job
+                 Create Job
               </Link>
             </div>
           ) : (
