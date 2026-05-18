@@ -57,9 +57,10 @@ export const uploadCv = async (
       data: candidate,
     } as ApiResponse<object>);
   } catch (error) {
+    console.error("upload error:", error)
     res.status(500).json({
       success: false,
-      message: "Server error during CV upload",
+      message: error instanceof Error ? error.message : "Server error during CV upload",
     } as ApiResponse<null>);
   }
 };

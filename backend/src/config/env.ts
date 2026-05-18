@@ -13,4 +13,7 @@ const getEnv = (key: string, fallback?: string): string => {
 export const PORT = getEnv("PORT", "5000");
 export const MONGODB_URI = getEnv("MONGODB_URI");
 export const JWT_SECRET = getEnv("JWT_SECRET", "superdupersecret");
+export const GEMINI_API_KEY = getEnv("GEMINI_API_KEY");
+export const GROQ_API_KEY = getEnv("GROQ_API_KEY");
+export const ARCJET_KEY = getEnv("ARCJET_KEY");
 
