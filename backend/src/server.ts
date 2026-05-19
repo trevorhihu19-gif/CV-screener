@@ -2,6 +2,7 @@ import express from 'express';
 import cors from "cors";
 import { PORT } from './config/env.js';
 import { connectToDB } from './config/database.js';
+import { arcjetProtect } from './middlewares/arcjet.auth.middleware.js';
 import authRouter from './routes/auth.routes.js';
 import JobRouter from './routes/job.routes.js';
 import candidateRouter from './routes/candidate.routes.js';
@@ -14,6 +15,8 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.urlencoded({ extended: false}));
+
+app.use(arcjetProtect);
 
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", JobRouter);
