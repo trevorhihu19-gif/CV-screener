@@ -48,7 +48,7 @@ export const RegisterPage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none
+              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none text-gray-900
                             focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
           </div>
@@ -60,7 +60,7 @@ export const RegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none
+              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none text-gray-900
                             focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
           </div>
@@ -73,8 +73,8 @@ export const RegisterPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="......."
-              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none
+              placeholder="Enter your password"
+              className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none text-gray-900
                             focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
           </div>

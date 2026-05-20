@@ -46,7 +46,7 @@ export const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter Email"
               className="border border-gray-200 rounded-xl px-4 py-3 text-sm
-                            outline-none focus:border-blue-500 focus:ring-blue-100 transition-all"
+                            outline-none text-gray-900 focus:border-blue-500 focus:ring-blue-100 transition-all"
             />
           </div>
 
@@ -58,8 +58,8 @@ export const LoginPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="......."
-              className="border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none
+              placeholder="Enter your password"
+              className="border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none text-gray-900
                             focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
           </div>

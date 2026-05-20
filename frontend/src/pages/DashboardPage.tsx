@@ -4,17 +4,37 @@ import { useAuth } from "../context/AuthContext.tsx";
 import { Navbar } from "../components/Navbar.tsx";
 import { getJobs } from "../api/jobs.ts";
 import type { Job } from "../types/index.ts";
+import { getCandidateByJob } from "../api/candidates.ts";
 
 export const DashboardPage = () => {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [totalCVs, setTotalCVs] = useState<number>(0);
+  const [shortListed, setShortListed] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const res = await getJobs();
-        if (res.success && res.data) setJobs(res.data);
+        if (res.success && res.data) {
+          setJobs(res.data);
+
+          let cvCount = 0;
+          let shortListedCount = 0;
+
+          for (const job of res.data) {
+            const candidatesRes = await getCandidateByJob(job._id);
+            if (candidatesRes.success && candidatesRes.data) {
+              cvCount += candidatesRes.data.length;
+              shortListedCount += candidatesRes.data.filter(
+                (c) => c.status === "shortlisted",
+              ).length;
+            }
+          }
+          setTotalCVs(cvCount);
+          setShortListed(shortListedCount);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -43,7 +63,7 @@ export const DashboardPage = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5
                         text-sm font-medium transition-all flex items-center gap-2"
           >
-             New Job
+            New Job
           </Link>
         </div>
 
@@ -57,19 +77,19 @@ export const DashboardPage = () => {
             },
             {
               label: "Total CVs",
-              value: "—",
+              value: totalCVs,
               icon: "📄",
-              color: "bg-purple-50 dark:bg-purple-950 text-purple-600",
+              color: "bg-purple-50 dark:bg-purple-900 text-purple-600",
             },
             {
               label: "Shortlisted",
-              value: "—",
+              value: shortListed,
               icon: "✅",
               color: "bg-green-50 dark:bg-green-950 text-green-600",
             },
             {
               label: "Time Saved",
-              value: "—",
+              value: `${totalCVs * 10} Min`,
               icon: "⏱",
               color: "bg-amber-50 dark:bg-amber-950 text-amber-600",
             },
@@ -133,7 +153,7 @@ export const DashboardPage = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 text-sm
                         font-medium transition-all mt-1"
               >
-                 Create Job
+                Create Job
               </Link>
             </div>
           ) : (

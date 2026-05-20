@@ -65,7 +65,7 @@ import { Link } from "react-router-dom";
                     font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-200
                     dark:shadow-blue-950"
               >
-                Start Screening Free
+                Start Screening for Free
               </Link>
               <a
                 href="#features"

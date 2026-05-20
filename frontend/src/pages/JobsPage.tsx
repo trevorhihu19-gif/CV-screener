@@ -93,7 +93,7 @@ export const JobsPage = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5
                         text-sm font-medium transition-all flex items-center gap-2"
           >
-            {showForm ? "X cancel" : " New Job"}
+            {showForm ? "cancel" : " New Job"}
           </button>
         </div>
 

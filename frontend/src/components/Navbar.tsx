@@ -25,6 +25,14 @@ export const Navbar = () => {
           <span className="w-2 h-2 rounded-full bg-blue-600 mb-3 inline-block" />
         </Link>
 
+         <Link
+          to="/"
+          className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900
+                    dark:hover:text-white transition-colors"
+        >
+          Home
+        </Link>
+
         <Link
           to="/dashboard"
           className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900
