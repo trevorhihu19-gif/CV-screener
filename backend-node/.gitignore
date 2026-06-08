@@ -1,8 +1,5 @@
-**/__pycache__/
-**/*.pyc
-**/venv/
-.env
 node_modules/
 .env.development.local
+.env
 dist/
 uploads/
