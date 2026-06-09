@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.config.env import settings
+from api.config.db import engine, Base
+import api.models 
+from api.routes.auth import router as auth_router
 
 app = FastAPI(
     title="RecruitBot",
@@ -15,6 +18,13 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers = ["*"]
 )
+
+@app.on_event("startup")
+def startup():
+    Base.metadata.create_all(bind=engine)
+    print("Database connected and tables created")
+
+app.include_router(auth_router)
 
 @app.get("/")
 def root():
