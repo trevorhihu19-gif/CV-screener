@@ -24,7 +24,7 @@ export const DashboardPage = () => {
           let shortListedCount = 0;
 
           for (const job of res.data) {
-            const candidatesRes = await getCandidateByJob(job._id);
+            const candidatesRes = await getCandidateByJob(job.id);
             if (candidatesRes.success && candidatesRes.data) {
               cvCount += candidatesRes.data.length;
               shortListedCount += candidatesRes.data.filter(
@@ -72,13 +72,13 @@ export const DashboardPage = () => {
             {
               label: "Total Jobs",
               value: jobs.length,
-              icon: "💼",
+              icon: "/icons8-jobs-58.png",
               color: "bg-blue-50 dark:bg-blue-950 text-blue-600",
             },
             {
               label: "Total CVs",
               value: totalCVs,
-              icon: "📄",
+              icon: "/icons8-file-100.png",
               color: "bg-purple-50 dark:bg-purple-900 text-purple-600",
             },
             {
@@ -90,7 +90,7 @@ export const DashboardPage = () => {
             {
               label: "Time Saved",
               value: `${totalCVs * 10} Min`,
-              icon: "⏱",
+              icon: "/icons8-time-50.png",
               color: "bg-amber-50 dark:bg-amber-950 text-amber-600",
             },
           ].map((kpi) => (
@@ -104,9 +104,17 @@ export const DashboardPage = () => {
                   {kpi.label}
                 </span>
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg ${kpi.color}`}
+                  className={`w-9 h-9 rounded-xl ${kpi.color} flex items-center justify-center p-1.5`}
                 >
-                  {kpi.icon}
+                  {kpi.icon.endsWith(".png") ? (
+                    <img
+                      src={kpi.icon}
+                      alt=""
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-lg">{kpi.icon}</span>
+                  )}
                 </div>
               </div>
               <div className="text-3xl font-black text-gray-900 dark:text-white">
@@ -160,7 +168,7 @@ export const DashboardPage = () => {
             <div className="divide-y divide-gray-50 dark:divide-gray-800">
               {jobs.map((job) => (
                 <div
-                  key={job._id}
+                  key={job.id}
                   className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 *:
                             dark:hover:bg-gray-800/50 transition-colors"
                 >
@@ -169,11 +177,11 @@ export const DashboardPage = () => {
                       {job.title}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {job.requirements.slice(0, 3).join(" . ")}
+                      {job.requirements?.slice(0, 3).join(" . ")}
                     </p>
                   </div>
                   <Link
-                    to={`/jobs/${job._id}/candidates`}
+                    to={`/jobs/${job.id}/candidates`}
                     className="text-sm text-blue-600 hover:underline font-medium"
                   >
                     View Candidates

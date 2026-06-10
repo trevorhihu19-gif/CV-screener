@@ -1,7 +1,7 @@
 const features = [
   {
     step: "01",
-    icon: "📋",
+    icon: "/3dicons-file-text-dynamic-color.png",
     color: "bg-blue-50 dark:bg-blue-950",
     iconColor: "text-blue-600",
     title: "Paste Job Description",
@@ -9,7 +9,7 @@ const features = [
   },
   {
     step: "02",
-    icon: "📤",
+    icon: "/3dicons-folder-dynamic-color.png",
     color: "bg-orange-50 dark:bg-orange-950",
     iconColor: "text-orange-600",
     title: "Upload CVs in Bulk",
@@ -17,7 +17,7 @@ const features = [
   },
   {
     step: "03",
-    icon: "✨",
+    icon: "/3dicons-medal-dynamic-color.png",
     color: "bg-green-50 dark:bg-green-950",
     iconColor: "text-green-600",
     title: "Get AI-Ranked Results",
@@ -63,9 +63,17 @@ const FeaturesSection = () => {
               </span>
 
               <div
-                className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center text-2xl mb-6`}
+                className={`w-14 h-14 rounded-xl ${f.color} flex items-center justify-center p-2.5 transition-transform duration-300 group-hover:scale-110`}
               >
-                {f.icon}
+                {f.icon.endsWith(".png") ? (
+                  <img
+                    src={f.icon}
+                    alt={`${f.title} illustration`}
+                    className="w-full h-full object-contain animate-[float_4s_ease-in-out_infinite]"
+                  />
+                ) : (
+                  <span className={`text-xl ${f.iconColor}`}>{f.icon}</span>
+                )}
               </div>
 
               <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-3">

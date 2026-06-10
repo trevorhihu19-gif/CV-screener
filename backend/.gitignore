@@ -6,3 +6,5 @@ node_modules/
 .env.development.local
 dist/
 uploads/
+chroma_db/
+chroma.sqlite3

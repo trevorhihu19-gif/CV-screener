@@ -1,7 +1,7 @@
-const productLinks = ["Features", "Pricing", "API Docs", "Changelog"];
-const companyLinks = ["About", "Blog", "Careers", "Contact"];
+const productLinks = ["Features", "Pricing"];
+const companyLinks = ["About", "Contact"];
 const legalLinks = ["Privacy Policy", "Terms of Use", "Cookie Policy", "GDPR"];
-const trustBadges = ["SOC 2 Patent", "GDPR Ready", "256-bit SSL"];
+
 
 const Footer = () => {
   return (
@@ -89,17 +89,6 @@ const Footer = () => {
           <p className="text-gray-500 text-sm">
             © 2026 RecruitBot. All rights reserved.
           </p>
-
-          <div className="flex items-center gap-3 flex-wrap justify-center">
-            {trustBadges.map((badge) => (
-              <span
-                key={badge}
-                className="bg-gray-800 text-gray-400 rounded-lg px-3 py-1.5 text-xs font-medium"
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

@@ -4,6 +4,8 @@ from api.config.env import settings
 from api.config.db import engine, Base
 import api.models 
 from api.routes.auth import router as auth_router
+from api.routes.job import router as job_router
+from api.routes.candidate import router as candidate_router
 
 app = FastAPI(
     title="RecruitBot",
@@ -25,6 +27,8 @@ def startup():
     print("Database connected and tables created")
 
 app.include_router(auth_router)
+app.include_router(job_router)
+app.include_router(candidate_router)
 
 @app.get("/")
 def root():

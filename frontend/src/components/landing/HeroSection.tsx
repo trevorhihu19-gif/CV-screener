@@ -25,7 +25,7 @@ import { Link } from "react-router-dom";
               className="inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-950
                 text-amber-700 dark:text-amber-400 rounded-full px-4 py-2 text-sm font-semibold w-fit"
             >
-              ⚡ 94% Screening Accuracy
+               94% Screening Accuracy
             </div>
 
             <h1
@@ -179,11 +179,11 @@ import { Link } from "react-router-dom";
                 className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950 flex items-center 
                 justify-center text-lg shrink-0"
               >
-                🤖
+                <img src="/icons8-chatbot-48.png" alt="chatbot"/>
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                  AI Analysing...
+                  RecruitBot Analysing...
                 </p>
                 <div className="flex gap-1 mt-1">
                   {[0, 1, 2].map((i) => (

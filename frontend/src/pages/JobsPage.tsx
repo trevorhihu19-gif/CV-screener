@@ -15,11 +15,9 @@ export const JobsPage = () => {
   const [description, setDescription] = useState("");
   const [requirementsInput, setRequirementsInput] = useState("");
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
+  
 
-  const fetchJobs = async () => {
+  async function fetchJobs() {
     try {
       const res = await getJobs();
       if (res.success && res.data) setJobs(res.data);
@@ -29,6 +27,13 @@ export const JobsPage = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const initialize = async () => {
+      await fetchJobs();
+    }
+    initialize();
+  }, [])
 
   const handleCreateJob = async () => {
     setError("");
@@ -66,7 +71,7 @@ export const JobsPage = () => {
     if (!confirm("Are you sure you want to delete this job?")) return;
     try {
       await deleteJob(id);
-      setJobs((prev) => prev.filter((j) => j._id !== id));
+      setJobs((prev) => prev.filter((j) => j.id !== id));
     } catch (err) {
       console.error(err);
       setError("Failed to delete job");
@@ -205,7 +210,7 @@ export const JobsPage = () => {
           <div className="grid grid-cols md:grid-cols-2 lg:grid-cols-3 gap-5">
             {jobs.map((job) => (
               <div
-                key={job._id}
+                key={job.id}
                 className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100
                     dark:border-gray-800 p-6 flex flex-col gap-4 hover:shadow-md transition-all"
               >
@@ -214,7 +219,7 @@ export const JobsPage = () => {
                     {job.title}
                   </h3>
                   <p className="text-gary-400 text-xs mt-1">
-                    {new Date(job.createdAt).toLocaleDateString("en-KE", {
+                    {new Date(job.created_at).toLocaleDateString("en-KE", {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
@@ -227,7 +232,7 @@ export const JobsPage = () => {
                 </p>
 
                 <div className="flex flex-wrap gap-2">
-                  {job.requirements.slice(0, 4).map((req) => (
+                  {job.requirements?.slice(0, 4).map((req) => (
                     <span
                       key={req}
                       className="bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400
@@ -236,7 +241,7 @@ export const JobsPage = () => {
                       {req}
                     </span>
                   ))}
-                  {job.requirements.length > 4 && (
+                  {job.requirements?.length > 4 && (
                     <span className="text-xs text-gray-400 py-1">
                       +{job.requirements.length - 4} more
                     </span>
@@ -245,7 +250,7 @@ export const JobsPage = () => {
 
                 <div className="flex items-center gap-3 mt-auto pt-2 border-t border-gray-50 dark:border-gray-800">
                   <Link
-                    to={`/jobs/${job._id}/candidates`}
+                    to={`/jobs/${job.id}/candidates`}
                     className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white
                                     rounded-xl py-2 text-sm font-medium transition-all"
                   >
@@ -253,13 +258,13 @@ export const JobsPage = () => {
                   </Link>
 
                   <button
-                    onClick={() => handleDeleteJob(job._id)}
+                    onClick={() => handleDeleteJob(job.id)}
                     className="w-8 h-9 rounded-xl bg-red-50 dark:bg-red-950 text-red-500
                                     hover:bg-red-200 dark:hover:bg-red-900 flex items-center justify-center
                                     transition-all text-sm"
                     title="Delete job"
                   >
-                    🗑
+                    <img src="/icons8-delete-trash-48 (1).png" alt="delete-trash"/>
                   </button>
                 </div>
               </div>

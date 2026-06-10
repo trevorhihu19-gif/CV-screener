@@ -34,27 +34,32 @@ export const CandidatesPage = () => {
 
   useEffect(() => {
     if (!jobId) return;
+
+    const fetchData = async () => {
+      if (!jobId || jobId === "undefined") {
+        console.error("Invalid or missing job ID in routing path.");
+        return;
+      }
+      try {
+        const [jobRes, candidatesRes] = await Promise.all([
+          getJobById(jobId!),
+          getCandidateByJob(jobId!),
+        ]);
+
+        if (jobRes.success && jobRes.data) setJob(jobRes.data);
+        if (candidatesRes.success && candidatesRes.data) {
+          setCandidates(candidatesRes.data);
+          if (candidatesRes.data.length > 0) setSelected(candidatesRes.data[0]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchData();
   }, [jobId]);
-
-  const fetchData = async () => {
-    try {
-      const [jobRes, candidatesRes] = await Promise.all([
-        getJobById(jobId!),
-        getCandidateByJob(jobId!),
-      ]);
-
-      if (jobRes.success && jobRes.data) setJob(jobRes.data);
-      if (candidatesRes.success && candidatesRes.data) {
-        setCandidates(candidatesRes.data);
-        if (candidatesRes.data.length > 0) setSelected(candidatesRes.data[0]);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleUpload = async () => {
     setUploadError("");
@@ -66,7 +71,7 @@ export const CandidatesPage = () => {
     const formData = new FormData();
     formData.append("name", candidateName);
     formData.append("email", candidateEmail);
-    formData.append("cv", cvFile);
+    formData.append("file", cvFile);
 
     setIsUploading(true);
     try {
@@ -93,9 +98,9 @@ export const CandidatesPage = () => {
       const res = await updateCandidateStatus(id, status);
       if (res.success && res.data) {
         setCandidates((prev) =>
-          prev.map((c) => (c._id === id ? res.data! : c)),
+          prev.map((c) => (c.id === id ? res.data! : c)),
         );
-        if (selected?._id === id) setSelected(res.data);
+        if (selected?.id === id) setSelected(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -106,8 +111,8 @@ export const CandidatesPage = () => {
     if (!confirm("Are you sure you want to delete this candidate?")) return;
     try {
       await deleteCandidate(id);
-      setCandidates((prev) => prev.filter((c) => c._id !== id));
-      if (selected?._id === id) setSelected(null);
+      setCandidates((prev) => prev.filter((c) => c.id !== id));
+      if (selected?.id === id) setSelected(null);
     } catch (err) {
       console.error(err);
     }
@@ -282,11 +287,11 @@ export const CandidatesPage = () => {
                 <div className="divide-y divide-gray-50 dark:divide-gray-800">
                   {candidates.map((candidate) => (
                     <div
-                      key={candidate._id}
+                      key={candidate.id}
                       onClick={() => setSelected(candidate)}
                       className={`flex items-center justify-between px-6 py-4 cursor-pointer 
                         transition-colors ${
-                          selected?._id === candidate._id
+                          selected?.id === candidate.id
                             ? "bg-blue-50 dark:bg-blue-950/30"
                             : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                         }`}
@@ -311,9 +316,9 @@ export const CandidatesPage = () => {
 
                       <div className="flex items-center gap-3">
                         <span
-                          className={`font-bold text-sm ${getScoreColor(candidate.matchScore)}`}
+                          className={`font-bold text-sm ${getScoreColor(candidate.match_score)}`}
                         >
-                          {candidate.matchScore}
+                          {candidate.match_score}
                         </span>
                         <span className={statusColors[candidate.status]}>
                           {candidate.status}
@@ -331,7 +336,9 @@ export const CandidatesPage = () => {
             >
               {!selected ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <span className="text-3xl">👈</span>
+                  <span className="text-3xl">
+                    <img src="/icons8-arrow-left-94.png" alt="arrow-left"/>
+                  </span>
                   <p className="text-gray-400 text-sm text-center">
                     Select a candidate to view their details
                   </p>
@@ -362,9 +369,9 @@ export const CandidatesPage = () => {
                       Match Score
                     </span>
                     <span
-                      className={`text-3xl font-black ${getScoreColor(selected.matchScore)}`}
+                      className={`text-3xl font-black ${getScoreColor(selected.match_score)}`}
                     >
-                      {selected.matchScore}
+                      {selected.match_score}
                       <span className="text-sm text-gray-400 font-normal">
                         /100
                       </span>
@@ -375,11 +382,11 @@ export const CandidatesPage = () => {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
                       Skill Breakdown
                     </p>
-                    {selected.skillBreakdown.map((skill) => (
-                      <div key={skill.skill} className="flex flex-col gap-1.5">
+                    {selected.skill_breakdown.map((skill) => (
+                      <div key={skill.name || skill.skill} className="flex flex-col gap-1.5">
                         <div className="flex justify-between text-xs font-medium">
                           <span className="text-gray-700 dark:text-gray-300">
-                            {skill.skill}
+                            {skill.name || skill.skill}
                           </span>
                           <span className="text-gray-400">{skill.score}%</span>
                         </div>
@@ -395,10 +402,11 @@ export const CandidatesPage = () => {
 
                   <div className="bg-blue-50 dark:bg-blue-950 rounded-xl p-4">
                     <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">
-                      🤖 AI Summary
+                      <img src="/icons8-chatbot-48.png" alt="chatbot" /> 
+                      AI Summary
                     </p>
                     <p className="text-sm text-blue-800 dark:text-blue-300 leading-relaxed">
-                      {selected.aiSummary}
+                      {selected.ai_summary}
                     </p>
                   </div>
 
@@ -410,7 +418,7 @@ export const CandidatesPage = () => {
                       value={selected.status}
                       aria-label="Update candidate status"
                       onChange={(e) =>
-                        handleStatusChange(selected._id, e.target.value)
+                        handleStatusChange(selected.id, e.target.value)
                       }
                       className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 transition-all"
                     >
@@ -422,10 +430,10 @@ export const CandidatesPage = () => {
                   </div>
 
                   <button
-                    onClick={() => handleDelete(selected._id)}
+                    onClick={() => handleDelete(selected.id)}
                     className="w-full bg-red-50 dark:bg-red-950 hover:bg-red-100 dark:hover:bg-red-900 text-red-500 rounded-xl py-2.5 text-sm font-medium transition-all"
                   >
-                    🗑️ Delete Candidate
+                     Delete Candidate
                   </button>
                 </>
               )}

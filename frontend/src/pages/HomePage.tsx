@@ -1,7 +1,6 @@
 import LandingNavbar from "../components/landing/landingNavbar.tsx";
 import HeroSection from "../components/landing/HeroSection.tsx";
 import FeaturesSection from "../components/landing/FeaturesSection.tsx";
-import StatsSection from "../components/landing/StatsSection.tsx";
 import AboutSection from "../components/landing/AboutSection.tsx";
 import PricingSection from "../components/landing/PricingSection.tsx";
 import CTASection from "../components/landing/CTASection.tsx";
@@ -13,7 +12,6 @@ const HomePage = () => {
             <LandingNavbar />
             <HeroSection />
             <FeaturesSection />
-            <StatsSection />
             <AboutSection />
             <PricingSection />
             <CTASection />

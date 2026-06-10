@@ -2,6 +2,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
+    created_at?: string;
 }
 
 export interface AuthResponse {
@@ -10,25 +11,31 @@ export interface AuthResponse {
 }
 
 export interface Job {
-    _id: string;
+    id: string;
     title: string;
     description: string;
     requirements: string[];
-    createdBy: string;
-    createdAt: string;
+    created_by: string;
+    created_at: string;
+}
+
+export interface SkillScore{
+    name?: string;
+    skill?: string;
+    score: number,
 }
 
 export interface Candidate {
-    _id: string;
-    jobId: string;
+    id: string;
+    job_id: string;
     name: string;
     email: string;
-    cvPath: string;
-    matchScore: number;
-    skillBreakdown: SkillScore[];
-    aiSummary: string;
+    cv_path: string;
+    match_score: number;
+    skill_breakdown: SkillScore[];
+    ai_summary: string;
     status: "pending" | "shortlisted" | "reviewing" | "rejected";
-    createdAt: string;
+    created_at: string;
 }
 
 export interface ApiResponse<T> {
