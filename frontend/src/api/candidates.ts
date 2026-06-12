@@ -6,7 +6,7 @@ export const uploadCV = async (
   formData: FormData,
 ): Promise<ApiResponse<Candidate>> => {
   const res = await api.post(`candidates/upload/${jobId}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: {"Content-Type": "multipart/form-data"}
   });
   return res.data;
 };

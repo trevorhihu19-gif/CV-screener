@@ -52,7 +52,7 @@ async def upload_and_screen_cv(
         cv_path = file_path,
         job_title = job.title,
         job_description = job.description,
-        requirements = job.requirements or [],
+        requirements = (job.requirements or []),
         candidate_name = name,
         candidate_email = email,
     )
@@ -87,6 +87,8 @@ async def upload_and_screen_cv(
             "created_at": candidate.created_at
         }
     }
+    
+    
 
 def get_candidates_by_job(
         job_id: str,
@@ -126,7 +128,7 @@ def get_candidates_by_job(
             for c in candidates
         ]
     }
-
+    
 def get_candidate_by_id(
         candidate_id: str,
         current_user: User,

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 class SkillScore(BaseModel):
     skill: str
@@ -24,3 +24,7 @@ class CandidateResponse(BaseModel):
 
 class StatusUpdate(BaseModel):
     status: str
+
+class AgentMessage(BaseModel):
+    message: str
+    job_id: Optional[str] = None
