@@ -32,7 +32,7 @@ export const LoginPage = () => {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-500">
             {error}
           </div>
         )}
@@ -45,6 +45,7 @@ export const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter Email"
+              autoComplete="username"
               className="border border-gray-200 rounded-xl px-4 py-3 text-sm
                             outline-none text-gray-900 focus:border-blue-500 focus:ring-blue-100 transition-all"
             />
@@ -59,6 +60,7 @@ export const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              autoComplete="current-password"
               className="border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none text-gray-900
                             focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />

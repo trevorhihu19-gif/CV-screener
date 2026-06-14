@@ -3,7 +3,7 @@ import { useTheme } from "../../context/ThemeContext.tsx";
 
 const LandingNavbar = () => {
   const { isDark, toggleTheme } = useTheme();
-
+ 
   return (
     <nav
       className="sticky top-0 z-50 bg-white/85 dark:bg-gray-950/85 backdrop-blur-md border-b
@@ -24,6 +24,14 @@ const LandingNavbar = () => {
         >
           Home
         </a>
+        
+        <Link
+          to="/dashboard"
+          className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900
+                    dark:hover:text-white transition-colors"
+        >
+          Dashboard
+        </Link>
         <a
           href="#features"
           className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900

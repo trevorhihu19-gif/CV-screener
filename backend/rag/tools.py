@@ -5,7 +5,17 @@ from api.models.candidate import Candidate
 from api.models.job import Job
 import json
 import uuid
+import uuid as uuid_lib
 
+def is_valid_uuid(value: str) -> bool:
+    """Check if a string is a valid UUID"""
+
+    try:
+        uuid_lib.UUID(str(value))
+        return True
+    except (ValueError, AttributeError):
+        return False
+        
 @tool
 def search_candidates_tool(query: str, job_id: str = None) -> str:
     """Search for candidates using semantic search.
@@ -53,6 +63,13 @@ def get_job_candidates_tool(job_id: str) -> str:
         job_id: The UUID of the job to get candidates for
 
     Returns ranked list of candidates with scores and status."""
+
+    if not is_valid_uuid(job_id):
+        return (
+            f"ERROR: '{job_id}' is not a valid job ID. "
+            f"I cannot query the database with this value. "
+            f"Please provide a real job UUID from the system."
+        )
 
     session = SessionLocal()
     try:
@@ -233,6 +250,13 @@ def get_job_details_tool(job_id: str) -> str:
 
     Returns job title, description and requirements."""
 
+    if not is_valid_uuid(job_id):
+        return (
+            f"ERROR: '{job_id}' is not a valid job ID. "
+            f"I cannot query the database with this value. "
+            f"Please provide a real job UUID from the system."
+        )
+
     session = SessionLocal()
     try:
         job = session.query(Job).filter(
@@ -265,6 +289,13 @@ def get_hiring_summary_tool(job_id: str) -> str:
         job_id: The UUID of the job
 
     Returns statistics about the candidate pool."""
+
+    if not is_valid_uuid(job_id):
+        return (
+            f"ERROR: '{job_id}' is not a valid job ID. "
+            f"I cannot query the database with this value. "
+            f"Please provide a real job UUID from the system."
+        )
 
     session = SessionLocal()
     try:

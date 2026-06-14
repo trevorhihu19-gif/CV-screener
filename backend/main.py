@@ -6,6 +6,7 @@ import api.models
 from api.routes.auth import router as auth_router
 from api.routes.job import router as job_router
 from api.routes.candidate import router as candidate_router
+from api.routes.chat import router as chat_router
 
 app = FastAPI(
     title="RecruitBot",
@@ -29,6 +30,7 @@ def startup():
 app.include_router(auth_router)
 app.include_router(job_router)
 app.include_router(candidate_router)
+app.include_router(chat_router)
 
 @app.get("/")
 def root():

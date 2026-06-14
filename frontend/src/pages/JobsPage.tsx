@@ -15,8 +15,6 @@ export const JobsPage = () => {
   const [description, setDescription] = useState("");
   const [requirementsInput, setRequirementsInput] = useState("");
 
-  
-
   async function fetchJobs() {
     try {
       const res = await getJobs();
@@ -201,7 +199,9 @@ export const JobsPage = () => {
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800
             flex flex-col items-center justify-center py-20 gap-3"
           >
-            <span className="text-5xl">💼</span>
+            <span className="text-5xl">
+              <img src="icons8-document-48.png" alt="document"/>
+            </span>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               No jobs yet - create your first one
             </p>

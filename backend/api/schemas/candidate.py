@@ -28,3 +28,7 @@ class StatusUpdate(BaseModel):
 class AgentMessage(BaseModel):
     message: str
     job_id: Optional[str] = None
+
+class ChatMessage(BaseModel):
+    message: str
+    job_id: Optional[str] = None

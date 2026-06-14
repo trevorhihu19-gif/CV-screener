@@ -43,3 +43,26 @@ export interface ApiResponse<T> {
     message: string;
     data?: T;
 }
+
+export interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
+export interface ChatMessage {
+    id: string;
+    role: "user" | "assistant";
+    content: string;
+    timestamp: Date;
+}
+
+export interface sendMessageParams {
+    message: string;
+    job_id?: string;
+}
+
+export interface ChatResponse {
+    response: string;
+}

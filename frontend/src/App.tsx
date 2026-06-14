@@ -5,6 +5,7 @@ import { RegisterPage } from "./pages/RegisterPage.tsx";
 import { DashboardPage } from "./pages/DashboardPage.tsx";
 import { JobsPage } from "./pages/JobsPage.tsx";
 import { CandidatesPage } from "./pages/CandidatesPage.tsx";
+import { ChatPage } from "./pages/ChatPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
 
 function App() {
@@ -27,6 +28,15 @@ function App() {
         element={
           <ProtectedRoute>
             <JobsPage />
+          </ProtectedRoute>
+        }
+      />
+
+       <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <ChatPage />
           </ProtectedRoute>
         }
       />
