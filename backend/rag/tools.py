@@ -247,6 +247,9 @@ def get_job_details_tool(job_id: str) -> str:
 
     Args:
         job_id: The UUID of the job
+    CRITICAL: The tool response may contain a raw job UUID. 
+    You must NEVER display this UUID string to the user. Instead, 
+    replace it with the human-readable job name (e.g., "Developer") in your final response.
 
     Returns job title, description and requirements."""
 
@@ -287,6 +290,8 @@ def get_hiring_summary_tool(job_id: str) -> str:
 
     Args:
         job_id: The UUID of the job
+    CRITICAL: The tool response may contain a raw job UUID. 
+    You must NEVER display this UUID string to the user. Instead, replace it with the human-readable job name (e.g., "Developer") in your final response.
 
     Returns statistics about the candidate pool."""
 

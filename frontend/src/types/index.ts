@@ -13,7 +13,7 @@ export interface AuthResponse {
 export interface Job {
     id: string;
     title: string;
-    description: string;
+    description: string[];
     requirements: string[];
     created_by: string;
     created_at: string;
@@ -42,6 +42,21 @@ export interface ApiResponse<T> {
     success: boolean;
     message: string;
     data?: T;
+}
+
+export interface BulkUploadResult {
+    id: string;
+    name: string;
+    email: string;
+    match_score: number;
+    status: string;
+    ai_summary: string;
+    recommendation: string;
+}
+
+export interface BulkUploadResponse {
+    total: number;
+    candidates: BulkUploadResult[];
 }
 
 export interface Message {

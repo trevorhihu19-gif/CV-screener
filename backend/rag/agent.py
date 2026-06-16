@@ -9,6 +9,9 @@ import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_PROJECT"] = "RecruitAI-Production"
+
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
     api_key=settings.groq_api_key,
@@ -45,7 +48,10 @@ STRICT WORKFLOW — follow this exact order:
    Never type an ID yourself
 
 3. To give a hiring summary:
-   Call get_hiring_summary_tool with the job_id directly
+   Call get_hiring_summary_tool 
+   CRITICAL: The tool response may contain a raw job UUID. 
+   You must NEVER display this UUID string to the user. Instead, replace it with the human-readable job name
+    (e.g., "Developer", "Manager", "Engineer") in your final response.
 
 4. To search semantically:
    Call search_candidates_tool with a description

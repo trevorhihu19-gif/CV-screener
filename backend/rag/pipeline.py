@@ -1,5 +1,7 @@
 import os
 import json
+import uuid
+import time
 from groq import Groq
 from llama_index.core import(
     VectorStoreIndex,
@@ -12,7 +14,11 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.groq import Groq as LlamaGroq
 from llama_index.vector_stores.chroma import ChromaVectorStore
 import chromadb
+import uuid as uuid_module
 from api.config.env import settings
+
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_PROJECT"] = "RecruitAI-Production"
 
 Settings.embed_model = HuggingFaceEmbedding(
     model_name="all-MiniLM-L6-v2"
@@ -69,6 +75,46 @@ RULES:
 - status must match score: 71-100=shortlisted, 41-70=reviewing, 0-40=rejected
 - skillBreakdown must list each required skill from the job
 - Return raw JSON only, no markdown, no explanation"""
+
+def extract_candidate_info(cv_text: str) -> dict:
+    """Extract candidate name and email from CV text using Groq"""
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=100,
+            temperature=0,
+            messages=[
+                {
+                    "role": "system",
+                    "content": """Extract the candidate name and email from this CV.
+                        Return ONLY a JSON object like this:
+                        {"name": "Full Name", "email": "email@example.com"}
+                        If email not found use empty string.
+                        If name not found use "Unknown Candidate".
+                        Raw JSON only, no markdown."""
+                },
+                {
+                    "role": "user",
+                    "content": cv_text[:1000]  
+                }
+            ]
+        )
+        raw = response.choices[0].message.content
+        clean = raw.strip().replace("```json","").replace("```","").strip()
+        return json.loads(clean)
+    except Exception:
+        return {"name": "Unknown Candidate", "email": ""}
+    
+def extract_cv_text(file_path: str) -> str:
+    """Extract text from PDF or DOCX"""
+    from llama_index.core import SimpleDirectoryReader
+    try:
+        documents = SimpleDirectoryReader(
+            input_files=[file_path]
+        ).load_data()
+        return "\n".join([doc.text for doc in documents])
+    except Exception as e:
+        raise Exception(f"Could not read file: {str(e)}")
 
 def screen_cv(
     candidate_id: str,
@@ -144,6 +190,140 @@ CV:
         return json.loads(clean)
     except json.JSONDecodeError:
         return _failed_result("AI returned invalid JSON")
+    
+def screen_multiple_cvs(
+    job_id: str,
+    job_title: str,
+    job_description: str,
+    requirements: list,
+    file_paths: list  
+) -> list:
+    """
+    Screen multiple CV files at once.
+    Extracts candidate info automatically from each CV.
+    Returns list of screening results.
+    """
+
+    results = []
+    total = len(file_paths)
+    print(f"Starting bulk screening: {total} files")
+
+    for i, file_path in enumerate(file_paths):
+        print(f"\n[{i+1}/{total}] Processing: {os.path.basename(file_path)}")
+
+        try:
+            documents = SimpleDirectoryReader(
+                input_files=[file_path]
+            ).load_data()
+
+            if not documents:
+                print("   No text extracted")
+                continue
+
+            cv_text = "\n".join([doc.text for doc in documents])
+
+            if len(cv_text.strip()) < 50:
+                print("CV too short to process")
+                continue
+
+            print(f"Extracted {len(cv_text)} chars")
+
+            info = extract_candidate_info(cv_text)
+            print(f"Candidate: {info['name']} | {info['email']}")
+
+            candidate_id = str(uuid_module.uuid4())
+            requirements_str = ", ".join(requirements) if requirements else "Not specified"
+
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                max_tokens=1024,
+                temperature=0.1,
+                messages=[
+                    {"role": "system", "content": SCREENING_PROMPT},
+                    {
+                        "role": "user",
+                        "content": f"""Job Title: {job_title}
+Job Description: {job_description}
+Required Skills: {requirements_str}
+
+Candidate: {info['name']}
+CV:
+{cv_text}"""
+                    }
+                ]
+            )
+
+            raw = response.choices[0].message.content
+            clean = raw.strip().replace("```json","").replace("```","").strip()
+            screening = json.loads(clean)
+
+            try:
+                for doc in documents:
+                    doc.metadata.update({
+                        "candidate_id": candidate_id,
+                        "candidate_name": info["name"],
+                        "candidate_email": info["email"],
+                        "job_id": job_id,
+                        "job_title": job_title
+                    })
+                VectorStoreIndex.from_documents(
+                    documents,
+                    storage_context=storage_context
+                )
+            except Exception as embed_err:
+                print(f"Embedding failed: {embed_err}")
+
+            result = {
+                "candidate_id": candidate_id,
+                "name": info["name"],
+                "email": info["email"],
+                "file": os.path.basename(file_path),
+                "cv_path": file_path,
+                "match_score": screening.get("matchScore", 0),
+                "status": screening.get("status", "pending"),
+                "ai_summary": screening.get("aiSummary", ""),
+                "skill_breakdown": screening.get("skillBreakdown", []),
+                "recommendation": screening.get("recommendation", "Reject")
+            }
+
+            results.append(result)
+            print(f"Score: {result['match_score']}/100 → {result['recommendation']}")
+
+        except json.JSONDecodeError as e:
+            print(f"JSON parse error: {e}")
+            results.append({
+                "candidate_id": str(uuid.uuid4()),
+                "name": os.path.basename(file_path),
+                "email": "",
+                "file": os.path.basename(file_path),
+                "cv_path": file_path,
+                "match_score": 0,
+                "status": "rejected",
+                "ai_summary": "Screening failed — could not parse AI response",
+                "skill_breakdown": [],
+                "recommendation": "Reject"
+            })
+
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            results.append({
+                "candidate_id": str(uuid.uuid4()),
+                "name": os.path.basename(file_path),
+                "email": "",
+                "file": os.path.basename(file_path),
+                "cv_path": file_path,
+                "match_score": 0,
+                "status": "rejected",
+                "ai_summary": f"Processing failed: {str(e)}",
+                "skill_breakdown": [],
+                "recommendation": "Reject"
+            })
+
+        if i < total - 1:
+            time.sleep(3)
+
+    print(f"\nBulk complete: {len(results)}/{total} processed")
+    return results  
     
 def search_candidates(
         query: str,

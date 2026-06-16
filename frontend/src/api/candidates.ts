@@ -1,5 +1,5 @@
 import { api } from "./axios.ts";
-import type { ApiResponse, Candidate } from "../types/index.ts";
+import type { ApiResponse, Candidate, BulkUploadResponse } from "../types/index.ts";
 
 export const uploadCV = async (
   jobId: string,
@@ -9,6 +9,22 @@ export const uploadCV = async (
     headers: {"Content-Type": "multipart/form-data"}
   });
   return res.data;
+};
+
+export const bulkUploadCVs = async (
+  jobId: string,
+  files: File[]
+): Promise<ApiResponse<BulkUploadResponse>> => {
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append("files", file);
+  });
+  const res = await api.post(
+    `/candidates/jobs/${jobId}/candidates/bulk-upload`,
+    formData,
+    {headers: {"Content-Type": "multipart/form-data"}}
+  );
+  return res.data
 };
 
 export const getCandidateByJob = async (

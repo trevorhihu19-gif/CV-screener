@@ -8,9 +8,10 @@ class Settings(BaseSettings):
     groq_api_key: str
     arcjet_key: str
     arcjet_env: str = "development"
-    langsmith_api_key: str = ""
-    langsmith_project: str = "recruit_bot"
     environment: str = "development"
+    langchain_api_key: str = ""
+    langchain_tracing_v2: str = "true"
+    langchain_project: str = "RecruitAI"
 
     class Config:
         env_file = ".env"

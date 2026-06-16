@@ -232,18 +232,18 @@ export const JobsPage = () => {
                 </p>
 
                 <div className="flex flex-wrap gap-2">
-                  {job.requirements?.slice(0, 4).map((req) => (
+                  {job.description?.slice(0, 4).map((req) => (
                     <span
                       key={req}
-                      className="bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400
-                                        text-xs font-medium rounded-lg px-2.5 py-1"
+                      className="bg-blue-50/50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs
+                       font-medium rounded-lg px-2.5 py-1 border border-blue-200 dark:border-blue-800/60 shadow-sm"
                     >
                       {req}
                     </span>
                   ))}
-                  {job.requirements?.length > 4 && (
+                  {job.description?.length > 4 && (
                     <span className="text-xs text-gray-400 py-1">
-                      +{job.requirements.length - 4} more
+                      +{job.description.length - 4} more
                     </span>
                   )}
                 </div>

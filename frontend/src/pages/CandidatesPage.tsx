@@ -6,10 +6,11 @@ import {
   uploadCV,
   updateCandidateStatus,
   deleteCandidate,
+  bulkUploadCVs,
 } from "../api/candidates.ts";
 import { getJobById } from "../api/jobs.ts";
 import { sendMessage } from "../api/chat.ts";
-import type { Candidate, Job } from "../types/index.ts";
+import type { Candidate, Job, BulkUploadResult } from "../types/index.ts";
 
 interface ChatMessage {
   id: string;
@@ -32,12 +33,16 @@ export const CandidatesPage = () => {
   const [selected, setSelected] = useState<Candidate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isBulkUploading, setIsBulkUploading] = useState(false);
+  const [uploadMode, setUploadMode] = useState<"single" | "bulk">("single");
   const [showUpload, setShowUpload] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
   const [candidateName, setCandidateName] = useState("");
   const [candidateEmail, setCandidateEmail] = useState("");
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkResults, setBulkResults] = useState<BulkUploadResult[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [showChat, setShowChat] = useState(false);
@@ -123,6 +128,42 @@ export const CandidatesPage = () => {
     }
   };
 
+  const handleBulkUpload = async () => {
+    if (bulkFiles.length === 0) return;
+    setIsBulkUploading(true);
+    setBulkResults([]);
+    try {
+      const res = await bulkUploadCVs(jobId!, bulkFiles);
+      console.log("Bulk upload response:", res);
+
+      if (res.success && res.data) {
+        const candidates = res.data.candidates || [];
+        console.log("Candidates:", candidates);
+        setBulkResults(candidates);
+        const newCandidates = candidates.map((r:BulkUploadResult) => ({
+          id: r.id,
+          job_id: jobId!,
+          name: r.name,
+          email: r.email,
+          cv_path: "",
+          match_score: r.match_score,
+          skill_breakdown: [],
+          ai_summary: r.ai_summary,
+          status: r.status,
+          created_at: new Date().toISOString(),
+        })) as Candidate[];
+        
+        setCandidates((prev) => [...newCandidates, ...prev]);
+        setBulkFiles([]);
+        if (fileRef.current) fileRef.current.value = "";
+      }
+    } catch {
+      setUploadError("Bulk upload failed.Please try again");
+    } finally {
+      setIsBulkUploading(false);
+    }
+  };
+
   const handleStatusChange = async (id: string, status: string) => {
     try {
       const res = await updateCandidateStatus(id, status);
@@ -183,6 +224,13 @@ export const CandidatesPage = () => {
     }
   };
 
+  const scrollToChat = () => {
+    const chatSection = document.getElementById("recruitbot-chat-section");
+    if (chatSection) {
+      chatSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 75) return "text-green-600";
     if (score >= 50) return "text-amber-500";
@@ -239,95 +287,206 @@ export const CandidatesPage = () => {
         </div>
 
         {showUpload && (
-          <div
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100
-           dark:border-gray-800 p-6 mb-8"
-          >
-            <h2 className="font-bold text-gray-900 dark:text-white mb-5">
-              Upload & Screen CV
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-8">
+            <h2 className="font-bold text-gray-900 dark:text-white mb-4">
+              Upload & Screen CVs
             </h2>
 
-            {uploadError && (
-              <div
-                className="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200
-               dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm"
+            <div className="flex gap-2 mb-5">
+              <button
+                onClick={() => setUploadMode("single")}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  uploadMode === "single"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                }`}
               >
+                Single CV
+              </button>
+              <button
+                onClick={() => setUploadMode("bulk")}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  uploadMode === "bulk"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                Bulk Upload
+              </button>
+            </div>
+
+            {uploadError && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
                 {uploadError}
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Candidate Name
-                </label>
-                <input
-                  type="text"
-                  value={candidateName}
-                  onChange={(e) => setCandidateName(e.target.value)}
-                  placeholder="Enter Candidate's name"
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800
-                   text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl px-4 py-3 text-sm 
-                   outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-                    dark:focus:ring-blue-900 transition-all"
-                />
+            {uploadMode === "single" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Candidate Name
+                  </label>
+                  <input
+                    type="text"
+                    value={candidateName}
+                    onChange={(e) => setCandidateName(e.target.value)}
+                    placeholder="Enter candidate's Name"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Candidate Email
+                  </label>
+                  <input
+                    type="email"
+                    value={candidateEmail}
+                    onChange={(e) => setCandidateEmail(e.target.value)}
+                    placeholder="Enter candidate's Email"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    CV File (PDF or DOCX)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.docx"
+                    ref={fileRef}
+                    onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                    aria-label="file"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 dark:file:bg-blue-950 dark:file:text-blue-400"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <button
+                    onClick={handleUpload}
+                    disabled={isUploading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl py-3 text-sm font-medium transition-all flex items-center justify-center gap-2"
+                  >
+                    {isUploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Screening CV...
+                      </>
+                    ) : (
+                      "Upload & Screen"
+                    )}
+                  </button>
+                </div>
               </div>
+            )}
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Candidate Email
-                </label>
-                <input
-                  type="email"
-                  value={candidateEmail}
-                  onChange={(e) => setCandidateEmail(e.target.value)}
-                  placeholder="Enter candidate's email"
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800
-                   text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl px-4 py-3 text-sm 
-                   outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-                    dark:focus:ring-blue-900 transition-all"
-                />
-              </div>
+            {uploadMode === "bulk" && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    CV Files (PDF or DOCX — select multiple)
+                    <span className="text-gray-400 font-normal ml-1">
+                      max 20 files
+                    </span>
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.docx"
+                    multiple
+                    ref={fileRef}
+                    onChange={(e) =>
+                      setBulkFiles(Array.from(e.target.files || []))
+                    }
+                    aria-label="file"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 dark:file:bg-blue-950 dark:file:text-blue-400"
+                  />
+                </div>
 
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  CV File (PDF or DOCX, max 5MB)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  ref={fileRef}
-                  onChange={(e) => setCvFile(e.target.files?.[0] || null)}
-                  aria-label="file"
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800
-                   text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none transition-all 
-                   file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium 
-                   file:bg-blue-50 file:text-blue-600 dark:file:bg-blue-950 dark:file:text-blue-400 
-                   hover:file:bg-blue-100"
-                />
-              </div>
+                {bulkFiles.length > 0 && (
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-500 mb-2">
+                      {bulkFiles.length} file{bulkFiles.length > 1 ? "s" : ""}{" "}
+                      selected:
+                    </p>
+                    <div className="flex flex-col gap-1 max-h-32 overflow-y-auto">
+                      {bulkFiles.map((file, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400"
+                        >
+                          <span>📄</span>
+                          <span>{file.name}</span>
+                          <span className="text-gray-400">
+                            ({(file.size / 1024).toFixed(0)}KB)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              <div className="md:col-span-2">
                 <button
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white 
-                  rounded-xl py-3 text-sm font-medium transition-all flex items-center justify-center gap-2"
+                  onClick={handleBulkUpload}
+                  disabled={isBulkUploading || bulkFiles.length === 0}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl py-3 text-sm font-medium transition-all flex items-center justify-center gap-2"
                 >
-                  {isUploading ? (
+                  {isBulkUploading ? (
                     <>
-                      <div
-                        className="w-4 h-4 border-2 border-white border-t-transparent 
-                      rounded-full animate-spin"
-                      />
-                      Screening CV...
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Screening {bulkFiles.length} CVs...(this may take a minute)
                     </>
                   ) : (
-                    "Upload & Screen"
+                    `Screen ${bulkFiles.length || 0} CV${bulkFiles.length !== 1 ? "s" : ""}`
                   )}
                 </button>
+
+                {bulkResults.length > 0 && (
+                  <div className="bg-green-50 dark:bg-green-950 rounded-xl p-4">
+                    <p className="text-sm font-bold text-green-700 dark:text-green-400 mb-3">
+                      Screened {bulkResults.length} candidates
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {bulkResults.map((r) => (
+                        <div
+                          key={r.id}
+                          className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3 flex items-center 
+                          justify-between"
+                        >
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {r.name}
+                            </p>
+                            <p className="text-xs text-gray-400">{r.email}</p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                              {r.ai_summary}
+                            </p>
+                          </div>
+                          <div className="text-right shrink-0 ml-4">
+                            <p
+                              className={`text-lg font-black ${
+                                r.match_score >= 75
+                                  ? "text-green-600"
+                                  : r.match_score >= 50
+                                    ? "text-amber-500"
+                                    : "text-red-500"
+                              }`}
+                            >
+                              {r.match_score}
+                            </p>
+                            <span
+                              className={
+                                statusColors[r.status] || "badge-pending"
+                              }
+                            >
+                              {r.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -398,6 +557,18 @@ export const CandidatesPage = () => {
                     ))}
                   </div>
                 )}
+
+                <div className="flex justify-center my-8">
+                  <button
+                    onClick={scrollToChat}
+                    className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700
+                              flex items-center justify-center text-gray-400 hover:border-blue-500
+                              hover:text-blue-500 transition-all duration-300 cursor-pointer animate-bounce"
+                    aria-label="Scroll to RecruitBot Chat"
+                  >
+                    ↓
+                  </button>
+                </div>
               </div>
 
               <div
@@ -518,6 +689,7 @@ export const CandidatesPage = () => {
             </div>
 
             <div
+              id="recruitbot-chat-section"
               className="mt-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100
              dark:border-gray-800 overflow-hidden"
             >

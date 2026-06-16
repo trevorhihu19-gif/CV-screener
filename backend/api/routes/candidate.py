@@ -6,6 +6,7 @@ from api.models.user import User
 from api.schemas.candidate import StatusUpdate, AgentMessage
 from api.controllers.candidate import (
     upload_and_screen_cv,
+    bulk_upload_and_screen,
     get_candidates_by_job,
     get_candidate_by_id,
     update_candidate_status,
@@ -13,6 +14,7 @@ from api.controllers.candidate import (
 )
 from rag.pipeline import search_candidates
 from rag.agent import run_agent, get_recruiter_memory
+from typing import List
 
 router = APIRouter(prefix="/api/candidates", tags=["Candidates"])
 
@@ -27,6 +29,20 @@ async def upload_cv(
 ):
     return await upload_and_screen_cv(
         job_id, name, email, file, current_user, db
+    )
+
+@router.post("/jobs/{job_id}/candidates/bulk-upload")
+async def bulk_upload(
+    job_id: str,
+    db: Session = Depends(get_db),
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_user),   
+):
+    return await bulk_upload_and_screen(
+        job_id=job_id,
+        db=db,
+        files=files,
+        current_user=current_user
     )
 
 @router.post("agent/chat")
