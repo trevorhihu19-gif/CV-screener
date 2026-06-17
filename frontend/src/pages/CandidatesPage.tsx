@@ -106,7 +106,7 @@ export const CandidatesPage = () => {
     const formData = new FormData();
     formData.append("name", candidateName);
     formData.append("email", candidateEmail);
-    formData.append("cv", cvFile);
+    formData.append("file", cvFile);
 
     setIsUploading(true);
     try {

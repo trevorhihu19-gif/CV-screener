@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain_groq import ChatGroq
@@ -7,9 +8,11 @@ import sqlite3
 import os
 import warnings
 
+load_dotenv()
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
 os.environ["LANGCHAIN_PROJECT"] = "RecruitAI-Production"
 
 llm = ChatGroq(

@@ -59,8 +59,8 @@ async def upload_and_screen_cv(
     )
 
     candidate = Candidate(
-        id = candidate_id,
-        job_id = job_id,
+        id =PyUUID(candidate_id),
+        job_id =PyUUID(job_id),
         name = name,
         email = email,
         cv_path = file_path,

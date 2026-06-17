@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     langchain_api_key: str = ""
     langchain_tracing_v2: str = "true"
     langchain_project: str = "RecruitAI"
+    langchain_callbacks_background: str = "false"
 
     class Config:
         env_file = ".env"

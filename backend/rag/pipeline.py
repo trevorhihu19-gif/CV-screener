@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 import json
 import uuid
@@ -17,7 +18,10 @@ import chromadb
 import uuid as uuid_module
 from api.config.env import settings
 
+load_dotenv()
+
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
 os.environ["LANGCHAIN_PROJECT"] = "RecruitAI-Production"
 
 Settings.embed_model = HuggingFaceEmbedding(
