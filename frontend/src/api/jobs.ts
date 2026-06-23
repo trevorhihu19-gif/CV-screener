@@ -1,4 +1,4 @@
-import { api } from "./axios.ts";
+import api from "./axios.ts";
 import type { ApiResponse, Job } from "../types/index.ts";
 
 export const createJob = async (

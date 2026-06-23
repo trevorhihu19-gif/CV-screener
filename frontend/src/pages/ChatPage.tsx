@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../context/AuthContext.tsx";
+import { useUser } from "@clerk/clerk-react";
 import { Navbar } from "../components/Navbar.tsx";
 import { getJobs } from "../api/jobs.ts";
 import type { Job } from "../types/index.ts";
@@ -15,12 +15,12 @@ const suggestions = [
 ];
 
 export const ChatPage = () => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "Welcome",
       role: "assistant",
-      content: `Hi ${user?.name?.split(" ")[0]} I'm RecruitBot, your AI hiring assistant. 
+      content: `Hi ${user?.fullName?.split(" ")[0]} I'm RecruitBot, your AI hiring assistant. 
             I can help you search candidates, compare CVs, shortlist applicants and answer questions about your recruitment pipeline.
              What would you like to know?`,
       timestamp: new Date(),
@@ -188,7 +188,7 @@ export const ChatPage = () => {
                   {msg.role === "assistant" ? (
                     <img src="/icons8-chatbot-48.png" alt="chatbot" />
                   ) : (
-                    user?.name?.charAt(0).toUpperCase()
+                    user?.fullName?.charAt(0).toUpperCase()
                   )}
                 </div>
 

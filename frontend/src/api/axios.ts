@@ -1,14 +1,33 @@
 import axios from "axios";
 
-export const api = axios.create({
-    baseURL: "http://localhost:8000/api"
+const api = axios.create({
+  baseURL: "http://localhost:8000/api",
 });
 
-api.interceptors.request.use((config => {
-    const token = localStorage.getItem("token");
-    if(token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-}));
+let getTokenFn: (() => Promise<string | null>) | null = null;
 
+export const setTokenGetter = (fn: () => Promise<string | null>) => {
+  getTokenFn = fn;
+};
+
+api.interceptors.request.use(async (config) => {
+  if (getTokenFn) {
+    try {
+      const token = await getTokenFn();
+      console.log("JWT Token:", token)
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+        console.log("Auth header set ✅");
+      } else {
+        console.warn("No token available ⚠️");
+      }
+    } catch (err) {
+      console.error("Error getting token:", err);
+    }
+  } else {
+    console.warn("No token getter registered ⚠️");
+  }
+  return config;
+});
+
+export default api;

@@ -1,19 +1,38 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.tsx";
+import { useUser } from "@clerk/clerk-react";
+import { syncUser } from "../api/user.ts";
 import { Navbar } from "../components/Navbar.tsx";
 import { getJobs } from "../api/jobs.ts";
 import type { Job } from "../types/index.ts";
 import { getCandidateByJob } from "../api/candidates.ts";
 
 export const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, isLoaded } = useUser();
+  const [isSyncing, setIsSyncing] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [totalCVs, setTotalCVs] = useState<number>(0);
   const [shortListed, setShortListed] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoaded) return;
+
+    const sync = async () => {
+      try {
+        await syncUser();
+      } catch (err) {
+        console.error("Sync error:", err);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    sync();
+  }, [isLoaded]);
+
+  useEffect(() => {
+    if (isSyncing) return;
     const fetchJobs = async () => {
       try {
         const res = await getJobs();
@@ -42,7 +61,23 @@ export const DashboardPage = () => {
       }
     };
     fetchJobs();
-  }, []);
+  }, [isSyncing]);
+
+   if (!isLoaded || isSyncing) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              Setting up your account...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -52,7 +87,7 @@ export const DashboardPage = () => {
         <div className="flex items-center justify-between mb-10">
           <div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-              Welcome back, {user?.name.split(" ")[0]}
+              Welcome back, {user?.fullName?.split(" ")[0]}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
               Here's an overview of your screening activity

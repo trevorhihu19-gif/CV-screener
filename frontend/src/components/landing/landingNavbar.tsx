@@ -14,7 +14,7 @@ const LandingNavbar = () => {
           <span className="font-black text-xl tracking-tight text-gray-900 dark:text-white">
             Recruit Bot
           </span>
-          <span className="w-2 h-2 rounded-full bg-blue-600 mb-3 inline-block" />
+          <img src="/icons8-chatbot-48.png" alt="chatbot" className="w-5 h-5 object-contain"/>
         </div>
 
         <a

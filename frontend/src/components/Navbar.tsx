@@ -1,15 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.tsx";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import { useTheme } from "../context/ThemeContext.tsx";
 
 export const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+   signOut(() => navigate("/home"))
   };
 
   return (
@@ -22,7 +22,7 @@ export const Navbar = () => {
           <span className="font-black text-xl tracking-tight text-gray-900 dark:text-white">
             RecruitBot
           </span>
-          <span className="w-2 h-2 rounded-full bg-blue-600 mb-3 inline-block" />
+          <img src="/icons8-chatbot-48.png" alt="chatbot" className="w-5 h-5 object-contain"/>
         </Link>
 
         <Link
@@ -70,10 +70,10 @@ export const Navbar = () => {
             className="w-8 h-8 rounded-full bg-linear-to-br from-blue-200 to-orange-500
                     flex items-center justify-center text-white text-xs font-bold"
           >
-            {user?.name.charAt(0).toUpperCase()}
+            {user?.firstName?.charAt(0).toUpperCase()}
           </div>
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {user?.name}
+            {user?.firstName}
           </span>
 
           <button

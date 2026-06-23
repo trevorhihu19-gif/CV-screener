@@ -35,7 +35,7 @@ import { Link } from "react-router-dom";
               Hire Smarter
               <br />
               with{" "}
-              <span className="bg-linear-to-r from blue-600 to-orange-600 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-orange-900 to-orange-600 bg-clip-text text-transparent">
                 AI-powered
               </span>
               <br />

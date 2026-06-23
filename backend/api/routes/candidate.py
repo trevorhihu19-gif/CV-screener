@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
 from sqlalchemy.orm import Session
 from api.config.db import get_db
 from api.middleware.auth import get_current_user
 from api.models.user import User
 from api.schemas.candidate import StatusUpdate, AgentMessage
+from api.security.arcjet import protect_upload, protect_bulk_upload
 from api.controllers.candidate import (
     upload_and_screen_cv,
     bulk_upload_and_screen,
@@ -20,10 +21,12 @@ router = APIRouter(prefix="/api/candidates", tags=["Candidates"])
 
 @router.post("/upload/{job_id}")
 async def upload_cv(
+    request: Request, 
     job_id: str,
     name: str = Form(...),
     email: str = Form(...),
     file: UploadFile = File(...),
+    _: None = Depends(protect_upload),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -33,9 +36,11 @@ async def upload_cv(
 
 @router.post("/jobs/{job_id}/candidates/bulk-upload")
 async def bulk_upload(
+    request: Request,
     job_id: str,
     db: Session = Depends(get_db),
     files: List[UploadFile] = File(...),
+    _: None = Depends(protect_bulk_upload),
     current_user: User = Depends(get_current_user),   
 ):
     return await bulk_upload_and_screen(

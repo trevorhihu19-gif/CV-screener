@@ -84,7 +84,7 @@ export const CandidatesPage = () => {
         {
           id: "welcome",
           role: "assistant",
-          content: `Hi! I'm RecruitBot\nI can see you're reviewing candidates for **${job.title}**. 
+          content: `Hi! I'm RecruitBot\nI can see you're reviewing candidates for ${job.title} role. 
           I have full access to all ${candidates.length} candidate${candidates.length !== 1 ? "s" : ""}
            screened for this role.\nAsk me anything — who to shortlist, compare candidates, or get a hiring summary!`,
         },
@@ -759,7 +759,7 @@ export const CandidatesPage = () => {
                         <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
                           <div className="flex gap-1 items-center h-4">
                             <div
-                              className="w-2 h-2 bg-blue-500-400 rounded-full animate-bounce"
+                              className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
                               style={{ animationDelay: "0ms" }}
                             />
                             <div

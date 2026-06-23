@@ -13,8 +13,8 @@ export interface AuthResponse {
 export interface Job {
     id: string;
     title: string;
-    description: string[];
-    requirements: string;
+    description: string;
+    requirements: string[];
     created_by: string;
     created_at: string;
 }
