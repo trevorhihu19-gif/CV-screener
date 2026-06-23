@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from api.models.candidate import Candidate
 from api.models.job import Job
 from api.models.user import User
+from api.cache import agent_cache
 from rag.pipeline import screen_cv, screen_multiple_cvs
 from typing import List
 import uuid 
@@ -71,6 +72,7 @@ async def upload_and_screen_cv(
     )
     db.add(candidate)
     db.commit()
+    agent_cache.invalidate_job(job_id)
     db.refresh(candidate)
 
     return {
@@ -184,6 +186,7 @@ async def bulk_upload_and_screen(
             continue
 
     db.commit()
+    agent_cache.invalidate_job(job_id)
     print(f"Committed {len(saved_candidates)} candidates to DB")
 
     saved_candidates.sort(

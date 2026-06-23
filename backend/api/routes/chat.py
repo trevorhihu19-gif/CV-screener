@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from api.middleware.auth import get_current_user
 from api.models.user import User
 from api.schemas.candidate import ChatMessage
+from api.cache import agent_cache
 from api.security.arcjet import protect_chat
 from rag.agent import run_agent, stream_agent, get_recruiter_memory, clear_recruiter_memory
 
@@ -16,12 +17,14 @@ def chat(
     current_user: User = Depends(get_current_user)
 ):
     message = data.message
+    job_id = data.job_id or ""
     if data.job_id:
         message = f"[Job ID: {data.job_id}] {data.message}"
 
     response = run_agent(
         message=message,
-        recruiter_id=str(current_user.id)
+        recruiter_id=str(current_user.id),
+        job_id=job_id
     )
     return {
         "success": True,
