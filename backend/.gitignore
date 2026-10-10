@@ -1,6 +1,8 @@
 **/__pycache__/
 **/*.pyc
 **/venv/
+.venv/
+__pycache__/
 .env
 node_modules/
 .env.development.local
@@ -10,3 +12,4 @@ chroma_db/
 chroma.sqlite3
 memory/
 security/
+
