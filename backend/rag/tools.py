@@ -1,11 +1,14 @@
-from langchain_core.tools import tool
-from rag.pipeline import search_candidates
+import json
+import uuid as uuid_lib
+from uuid import UUID as PyUUID
+
 from api.config.db import SessionLocal
 from api.models.candidate import Candidate
 from api.models.job import Job
-from uuid import UUID as PyUUID
-import json
-import uuid as uuid_lib
+from langchain_core.tools import tool
+
+from rag.pipeline import search_candidates
+
 
 def is_valid_uuid(value: str) -> bool:
     """Check if a string is a valid UUID"""

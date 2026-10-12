@@ -1,14 +1,16 @@
+import os
+import uuid
+from typing import List
+from uuid import UUID as PyUUID
+
 from fastapi import HTTPException, UploadFile, status
+from rag.pipeline import screen_cv, screen_multiple_cvs
 from sqlalchemy.orm import Session
+
+from api.cache import agent_cache
 from api.models.candidate import Candidate
 from api.models.job import Job
 from api.models.user import User
-from api.cache import agent_cache
-from rag.pipeline import screen_cv, screen_multiple_cvs
-from typing import List
-import uuid 
-from uuid import UUID as PyUUID
-import os
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)

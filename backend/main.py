@@ -1,13 +1,15 @@
+import time
+
+from api.config.db import Base, engine
+from api.config.env import settings
+from api.routes.candidate import router as candidate_router
+from api.routes.chat import router as chat_router
+from api.routes.job import router as job_router
+from api.routes.user import router as user_router
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from api.config.env import settings
-from api.config.db import engine, Base
-from api.routes.job import router as job_router
-from api.routes.candidate import router as candidate_router
-from api.routes.chat import router as chat_router
-from api.routes.user import router as user_router
-import time
+
 app = FastAPI(
     title="RecruitBot",
     description="AI-powered CV screener",

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+
 from api.config.db import get_db
+from api.controllers.job import create_job, delete_job, get_job_by_id, get_jobs
 from api.middleware.auth import get_current_user
 from api.models.user import User
 from api.schemas.job import JobCreate
 from api.security.arcjet import protect_jobs
-from api.controllers.job import create_job, get_jobs, get_job_by_id, delete_job
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 

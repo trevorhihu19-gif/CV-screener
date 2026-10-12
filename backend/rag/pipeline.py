@@ -1,22 +1,23 @@
-from dotenv import load_dotenv
-import os
 import json
-import uuid
+import os
 import time
+import uuid
+import uuid as uuid_module
+
+import chromadb
+from api.config.env import settings
+from dotenv import load_dotenv
 from groq import Groq
-from llama_index.core import(
-    VectorStoreIndex,
+from llama_index.core import (
+    Settings,
     SimpleDirectoryReader,
     StorageContext,
-    Settings
+    VectorStoreIndex,
 )
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.groq import Groq as LlamaGroq
 from llama_index.vector_stores.chroma import ChromaVectorStore
-import chromadb
-import uuid as uuid_module
-from api.config.env import settings
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ Settings.embed_model = HuggingFaceEmbedding(
     model_name="all-MiniLM-L6-v2"
 )
 Settings.llm = LlamaGroq(
-    model="llama-3.3-70b-versatile"
+    model="openai/gpt-oss-120b"
 )
 Settings.text_splitter = SentenceSplitter(
     chunk_size=256,
@@ -84,8 +85,9 @@ def extract_candidate_info(cv_text: str) -> dict:
     """Extract candidate name and email from CV text using Groq"""
     try:
         response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            max_tokens=100,
+            model="openai/gpt-oss-120b",
+            max_tokens=1024,
+            reasoning_effort="low",
             temperature=0,
             messages=[
                 {
@@ -169,8 +171,8 @@ def screen_cv(
     requirements_str = ", ".join(requirements) if requirements else "Not specified"
 
     response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        max_tokens=1024,
+        model="openai/gpt-oss-120b",
+        max_tokens=4096,
         temperature=0.1,
         messages=[
             {"role": "system", "content": SCREENING_PROMPT},
@@ -239,8 +241,8 @@ def screen_multiple_cvs(
             requirements_str = ", ".join(requirements) if requirements else "Not specified"
 
             response = groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                max_tokens=1024,
+                model="openai/gpt-oss-120b",
+                max_tokens=4096,
                 temperature=0.1,
                 messages=[
                     {"role": "system", "content": SCREENING_PROMPT},
@@ -344,7 +346,7 @@ def search_candidates(
      )
 
     if job_id:
-         from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
+         from llama_index.core.vector_stores import ExactMatchFilter, MetadataFilters
          filters = MetadataFilters(filters=[
              ExactMatchFilter(key="job_id",  value=job_id)
          ])

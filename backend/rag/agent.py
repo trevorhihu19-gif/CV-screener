@@ -1,13 +1,15 @@
-from dotenv import load_dotenv
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.sqlite import SqliteSaver
-from langchain_groq import ChatGroq
-from rag.tools import tools
+import os
+import sqlite3
+import warnings
+
 from api.cache import agent_cache, is_cacheable
 from api.config.env import settings
-import sqlite3
-import os
-import warnings
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.prebuilt import create_react_agent
+
+from rag.tools import tools
 
 load_dotenv()
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -17,9 +19,9 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
 os.environ["LANGCHAIN_PROJECT"] = "RecruitAI-Production"
 
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+    model="openai/gpt-oss-120b",
     api_key=settings.groq_api_key,
-    max_tokens=1024,
+    max_tokens=4096,
     temperature=0
 )
 
@@ -58,7 +60,7 @@ You have access to real PostgreSQL data. Be direct and data-driven."""
 agent = create_react_agent(
     model=llm,
     tools=tools,
-    prompt=SYSTEM_PROMPT,
+    state_modifier=SYSTEM_PROMPT,
     checkpointer=checkpointer
 )
 

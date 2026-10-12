@@ -2,6 +2,7 @@ import hashlib
 import time
 from typing import Optional
 
+
 class SimpleCache:
     """
     In-memory cache for agent responses.

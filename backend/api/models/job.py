@@ -1,9 +1,12 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, ARRAY
+import uuid
+
+from sqlalchemy import ARRAY, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-import uuid
+
 from api.config.db import Base
+
 
 class Job(Base):
     __tablename__ = "jobs"

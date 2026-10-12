@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
+from rag.agent import (
+    clear_recruiter_memory,
+    get_recruiter_memory,
+    run_agent,
+    stream_agent,
+)
+
+from api.cache import agent_cache
 from api.middleware.auth import get_current_user
 from api.models.user import User
 from api.schemas.candidate import ChatMessage
-from api.cache import agent_cache
 from api.security.arcjet import protect_chat
-from rag.agent import run_agent, stream_agent, get_recruiter_memory, clear_recruiter_memory
 
 router = APIRouter(prefix="/api/chat", tags=["Chat"])
 

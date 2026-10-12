@@ -1,21 +1,23 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
+from typing import List
+
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from rag.agent import get_recruiter_memory, run_agent
+from rag.pipeline import search_candidates
 from sqlalchemy.orm import Session
+
 from api.config.db import get_db
+from api.controllers.candidate import (
+    bulk_upload_and_screen,
+    delete_candidate,
+    get_candidate_by_id,
+    get_candidates_by_job,
+    update_candidate_status,
+    upload_and_screen_cv,
+)
 from api.middleware.auth import get_current_user
 from api.models.user import User
-from api.schemas.candidate import StatusUpdate, AgentMessage
-from api.security.arcjet import protect_upload, protect_bulk_upload
-from api.controllers.candidate import (
-    upload_and_screen_cv,
-    bulk_upload_and_screen,
-    get_candidates_by_job,
-    get_candidate_by_id,
-    update_candidate_status,
-    delete_candidate
-)
-from rag.pipeline import search_candidates
-from rag.agent import run_agent, get_recruiter_memory
-from typing import List
+from api.schemas.candidate import AgentMessage, StatusUpdate
+from api.security.arcjet import protect_bulk_upload, protect_upload
 
 router = APIRouter(prefix="/api/candidates", tags=["Candidates"])
 

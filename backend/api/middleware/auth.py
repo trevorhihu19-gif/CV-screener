@@ -1,11 +1,12 @@
 import httpx
 import jwt
-from jwt import PyJWKClient
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jwt import PyJWKClient
 from sqlalchemy.orm import Session
-from api.config.env import settings
+
 from api.config.db import get_db
+from api.config.env import settings
 from api.models.user import User
 
 security = HTTPBearer()

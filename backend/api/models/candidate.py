@@ -1,8 +1,11 @@
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, JSON
+import uuid
+
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
-import uuid
+
 from api.config.db import Base
+
 
 class Candidate(Base):
     __tablename__ = "candidates"

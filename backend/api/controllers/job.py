@@ -1,8 +1,10 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+
 from api.models.job import Job
 from api.models.user import User
 from api.schemas.job import JobCreate
+
 
 def create_job(data: JobCreate, current_user: User, db: Session):
     job = Job(
