@@ -11,5 +11,5 @@ uploads/
 chroma_db/
 chroma.sqlite3
 memory/
-security/
+
 
